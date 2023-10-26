@@ -1,0 +1,98 @@
+CREATE TABLE Users (
+    "Id" INT PRIMARY KEY,
+
+	"IsCreator" BIT,
+
+    "Name" NVARCHAR(255),
+    "Email" NVARCHAR(255),
+    "PasswordHash" NVARCHAR(255)
+)
+
+CREATE TABLE Creators (
+    "Id" INT PRIMARY KEY,
+
+    "UserId" INT UNIQUE FOREIGN KEY REFERENCES Users(Id),
+
+    "PhoneNumber" NVARCHAR(20),
+    "AlternativePhoneNumber" NVARCHAR(20),
+    "Address" NVARCHAR(255),
+    "Description" NVARCHAR(MAX)
+);
+
+CREATE TABLE Nozzles (
+    "Id" INT PRIMARY KEY,
+    "Size" DECIMAL
+);
+
+CREATE TABLE Colors (
+    "Id" INT PRIMARY KEY,
+    "Name" NVARCHAR(255)
+);
+
+CREATE TABLE Printers (
+    "Id" INT PRIMARY KEY,
+
+    "TemplateId" INT FOREIGN KEY REFERENCES Printers(Id),
+
+    "IsTemplate" BIT,
+    "IsActive" BIT,
+
+	"PrintAreaLength" INT,
+    "PrintAreaWidth" INT,
+    "PrintAreaHeight" INT,
+
+    "Model" NVARCHAR(255)
+);
+
+CREATE TABLE Materials (
+    "Id" INT PRIMARY KEY,
+
+	"ColorId" INT FOREIGN KEY REFERENCES Colors(Id),
+	"TemplateId" INT FOREIGN KEY REFERENCES Materials(Id),
+
+	"IsTemplate" BIT,
+	"IsActive" BIT,
+
+    "Name" NVARCHAR(255)    
+);
+
+CREATE TABLE PrintRequestStatuses (
+    "Id" INT PRIMARY KEY,
+    "Name" NVARCHAR(255)
+);
+
+CREATE TABLE PrintRequests (
+    Id INT PRIMARY KEY,
+
+    UserId INT FOREIGN KEY REFERENCES Users(Id),
+    MaterialId INT FOREIGN KEY REFERENCES Materials(Id),
+    NozzleId INT FOREIGN KEY REFERENCES Nozzles(Id),
+    StatusId INT FOREIGN KEY REFERENCES PrintRequestStatuses(Id),
+	ColorId INT FOREIGN KEY REFERENCES Colors(Id),
+
+    UseSupports BIT,
+
+    BorderWidth DECIMAL,
+    LayerHeight DECIMAL,
+    PrintAreaLength INT,
+    PrintAreaWidth INT,
+    PrintAreaHeight INT,
+    Infill INT,
+
+    ModelPath NVARCHAR(255),
+    Comment NVARCHAR(MAX)
+);
+
+CREATE TABLE PrinterNozzle (
+    Id INT PRIMARY KEY,
+
+    PrinterId INT FOREIGN KEY REFERENCES Printers(Id),
+	NozzleId INT FOREIGN KEY REFERENCES Nozzles(Id)
+);
+
+CREATE TABLE PrinterMaterial (
+    Id INT PRIMARY KEY,
+
+    PrinterId INT FOREIGN KEY REFERENCES Printers(Id),
+	MaterialId INT FOREIGN KEY REFERENCES Materials(Id)
+);
